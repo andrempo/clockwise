@@ -1,0 +1,12 @@
+{
+    "name": "cw-commons",
+    "version": "1.0.0",
+    "description": "Clockwise Commons",
+    "frameworks": [
+        "arduino",
+        "espidf"
+    ],
+    "platforms": [
+        "espressif32"
+    ]
+}
