@@ -1,31 +1,25 @@
 #pragma once
 #include <Arduino.h>
 
-#include <ezTime.h>
-#include <WiFi.h>
-
 class CWDateTime
 {
-private:
-  Timezone myTZ;
-  bool use24hFormat = true;
-
 public:
-  void begin(const char *timeZone, bool use24format, const char *ntpServer, const char *posixTZ);
-  String getFormattedTime();
-  String getFormattedTime(const char* format);
+  virtual ~CWDateTime() = default;
 
-  char *getHour(const char *format);
-  char *getMinute(const char *format);
-  int getHour();
-  int getMinute();
-  int getSecond();
-  long getMilliseconds();
+  virtual String getFormattedTime() = 0;
+  virtual String getFormattedTime(const char* format) = 0;
 
-  int getDay();
-  int getMonth();
-  int getWeekday();
+  virtual char *getHour(const char *format) = 0;
+  virtual char *getMinute(const char *format) = 0;
+  virtual int getHour() = 0;
+  virtual int getMinute() = 0;
+  virtual int getSecond() = 0;
+  virtual long getMilliseconds() = 0;
 
-  bool isAM();
-  bool is24hFormat();
+  virtual int getDay() = 0;
+  virtual int getMonth() = 0;
+  virtual int getWeekday() = 0;
+
+  virtual bool isAM() = 0;
+  virtual bool is24hFormat() = 0;
 };

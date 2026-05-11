@@ -5,7 +5,7 @@
 #include <Clockface.h>
 // Commons
 #include <WiFiController.h>
-#include <CWDateTime.h>
+#include <CWDateTimeEzTime.h>
 #include <CWPreferences.h>
 #include <CWWebServer.h>
 #include <StatusController.h>
@@ -20,7 +20,7 @@ MatrixPanel_I2S_DMA *dma_display = nullptr;
 Clockface *clockface;
 
 WiFiController wifi;
-CWDateTime cwDateTime;
+CWDateTimeEzTime cwDateTime;
 
 bool autoBrightEnabled;
 long autoBrightMillis = 0;

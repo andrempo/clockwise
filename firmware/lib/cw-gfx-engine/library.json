@@ -1,0 +1,12 @@
+{
+    "name": "cw-gfx-engine",
+    "version": "1.0.0",
+    "description": "Clockwise GFX Engine",
+    "frameworks": [
+        "arduino",
+        "espidf"
+    ],
+    "platforms": [
+        "espressif32"
+    ]
+}

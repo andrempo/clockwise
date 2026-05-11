@@ -1,6 +1,8 @@
-#include "CWDateTime.h"
+#ifndef USE_ESPHOME
 
-void CWDateTime::begin(const char *timeZone, bool use24format, const char *ntpServer = NTP_SERVER, const char *posixTZ = "")
+#include "CWDateTimeEzTime.h"
+
+void CWDateTimeEzTime::begin(const char *timeZone, bool use24format, const char *ntpServer = NTP_SERVER, const char *posixTZ = "")
 {
   Serial.printf("[Time] NTP Server: %s, Timezone: %s\n", ntpServer, timeZone);
   ezt::setServer(String(ntpServer));
@@ -19,69 +21,71 @@ void CWDateTime::begin(const char *timeZone, bool use24format, const char *ntpSe
   waitForSync(10);
 }
 
-String CWDateTime::getFormattedTime()
+String CWDateTimeEzTime::getFormattedTime()
 {
   return myTZ.dateTime();
 }
 
-String CWDateTime::getFormattedTime(const char *format)
+String CWDateTimeEzTime::getFormattedTime(const char *format)
 {
   return myTZ.dateTime(format);
 }
 
-char *CWDateTime::getHour(const char *format)
+char *CWDateTimeEzTime::getHour(const char *format)
 {
   static char buffer[3] = {'\0'};
   strncpy(buffer, myTZ.dateTime((use24hFormat ? "H" : "h")).c_str(), sizeof(buffer));
   return buffer;
 }
 
-char *CWDateTime::getMinute(const char *format)
+char *CWDateTimeEzTime::getMinute(const char *format)
 {
   static char buffer[3] = {'\0'};
   strncpy(buffer, myTZ.dateTime("i").c_str(), sizeof(buffer));
   return buffer;
 }
 
-int CWDateTime::getHour()
+int CWDateTimeEzTime::getHour()
 {
   return myTZ.dateTime((use24hFormat ? "H" : "h")).toInt();
 }
 
-int CWDateTime::getMinute()
+int CWDateTimeEzTime::getMinute()
 {
   return myTZ.dateTime("i").toInt();
 }
 
-int CWDateTime::getSecond()
+int CWDateTimeEzTime::getSecond()
 {
   return myTZ.dateTime("s").toInt();
 }
 
-int CWDateTime::getDay() 
+int CWDateTimeEzTime::getDay() 
 {
   return myTZ.dateTime("d").toInt();
 }
-int CWDateTime::getMonth()
+int CWDateTimeEzTime::getMonth()
 {
   return myTZ.dateTime("m").toInt();
 }
-int CWDateTime::getWeekday() 
+int CWDateTimeEzTime::getWeekday() 
 {
   return myTZ.dateTime("w").toInt()-1;
 }
 
-long CWDateTime::getMilliseconds() 
+long CWDateTimeEzTime::getMilliseconds() 
 {
   return myTZ.ms(TIME_NOW);
 }
 
-bool CWDateTime::isAM() 
+bool CWDateTimeEzTime::isAM() 
 {
   return myTZ.isAM();
 }
 
-bool CWDateTime::is24hFormat() 
+bool CWDateTimeEzTime::is24hFormat() 
 {
   return this->use24hFormat;
 }
+
+#endif
