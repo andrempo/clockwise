@@ -18,7 +18,7 @@ void ClockwiseComponent::setup() {
 }
 
 
-void ClockwiseComponent::draw() { 
+void ClockwiseComponent::draw() {
     if (!initial_draw_done) {
         clockface->setup(cwDateTime);
         initial_draw_done = true;

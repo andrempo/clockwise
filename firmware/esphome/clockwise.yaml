@@ -47,8 +47,44 @@ wifi:
 time:
   - platform: sntp
     id: sntp_time
-    timezone: 'Etc/GMT+3'  
+    timezone: 'Etc/GMT+3'
 
+
+globals:
+  - id: cw_light_red
+    type: float
+    initial_value: '0.0'
+  - id: cw_light_green
+    type: float
+    initial_value: '0.0'
+  - id: cw_light_blue
+    type: float
+    initial_value: '0.0'
+
+output:
+  - platform: template
+    id: cw_output_red
+    type: float
+    write_action:
+      - lambda: id(cw_light_red) = state;
+  - platform: template
+    id: cw_output_green
+    type: float
+    write_action:
+      - lambda: id(cw_light_green) = state;
+  - platform: template
+    id: cw_output_blue
+    type: float
+    write_action:
+      - lambda: id(cw_light_blue) = state;
+
+light:
+  - platform: rgb
+    name: "Matrix Color Light"
+    id: matrix_light
+    red: cw_output_red
+    green: cw_output_green
+    blue: cw_output_blue
 
 display:
   - platform: hub75
@@ -62,16 +98,22 @@ display:
     double_buffer: false
     update_interval: 32ms
     lambda: |-
-      //it.print(0, 0, id(roboto10), "Hello World!");
-      //id(aurora_1)->auroraDraw(it);
-      id(clockwise_1)->draw();
+      if (id(cw_light_red) > 0.0f || id(cw_light_green) > 0.0f || id(cw_light_blue) > 0.0f) {
+        it.fill(Color(
+          (uint8_t)(id(cw_light_red) * 255.0f),
+          (uint8_t)(id(cw_light_green) * 255.0f),
+          (uint8_t)(id(cw_light_blue) * 255.0f)
+        ));
+      } else {
+        id(clockwise_1)->draw();
+      }
 
 font:
- - file: gfonts://VT323 #roboto.ttf
+ - file: gfonts://VT323
    id: roboto10
    size: 10
 
-  
+
 sensor:
   - platform: adc
     pin: GPIO35
@@ -80,5 +122,18 @@ sensor:
     unit_of_measurement: lx
     attenuation: 12db
     filters:
-      - lambda: |- 
+      - lambda: |-
           return (x / 10000.0) * 2000000.0;
+
+number:
+  - platform: template
+    name: "Matrix Brightness"
+    id: matrix_brightness
+    min_value: 0
+    max_value: 255
+    step: 1
+    initial_value: 32
+    optimistic: true
+    set_action:
+      - lambda: |-
+          id(matrix_display)->set_brightness((uint8_t)x);

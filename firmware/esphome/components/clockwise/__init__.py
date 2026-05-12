@@ -21,8 +21,8 @@ CONFIG_SCHEMA = cv.Schema({
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     disp = await cg.get_variable(config[MATRIX_DISPLAY_CONFIG])
-    cg.add(var.set_matrix_display(disp)) 
+    cg.add(var.set_matrix_display(disp))
     time_rtc = await cg.get_variable(config[TIME_CONFIG])
-    cg.add(var.set_time(time_rtc)) 
+    cg.add(var.set_time(time_rtc))
     await cg.register_component(var, config)
 
