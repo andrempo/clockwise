@@ -1,4 +1,5 @@
 #pragma once
+#ifndef USE_ESPHOME
 
 #include <Preferences.h>
 
@@ -105,3 +106,5 @@ struct ClockwiseParams
     }
 
 };
+
+#endif

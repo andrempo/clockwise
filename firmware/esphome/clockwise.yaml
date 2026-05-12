@@ -1,0 +1,84 @@
+esphome:
+  name: matrix-display
+  friendly_name: Matrix Display
+  platformio_options:
+    lib_ldf_mode: deep+
+    build_flags: -DUSE_ESPHOME
+    lib_deps:
+      - Network
+      - fastled/FastLED@^3.10.3
+      - Wire
+      - SPI
+      - adafruit/Adafruit GFX Library
+      - adafruit/Adafruit BusIO
+      - cw-gfx-engine=symlink:///home/andre/git/clockwise/firmware/lib/cw-gfx-engine
+      - cw-commons=symlink:///home/andre/git/clockwise/firmware/lib/cw-commons
+      - cw-pacman=symlink:///home/andre/git/clockwise/firmware/clockfaces/cw-cf-0x05
+i2c:
+spi:
+
+external_components:
+  - source: components
+
+
+clockwise:
+  id: clockwise_1
+  matrix_display: matrix_display
+  time: sntp_time
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: 'Etc/GMT+3'  
+
+
+display:
+  - platform: hub75
+    id: matrix_display
+    board: esp32-trinity
+    panel_width: 64
+    panel_height: 64
+    brightness: 32
+    e_pin: GPIO18
+    auto_clear_enabled: false
+    double_buffer: false
+    update_interval: 32ms
+    lambda: |-
+      //it.print(0, 0, id(roboto10), "Hello World!");
+      //id(aurora_1)->auroraDraw(it);
+      id(clockwise_1)->draw();
+
+font:
+ - file: gfonts://VT323 #roboto.ttf
+   id: roboto10
+   size: 10
+
+  
+sensor:
+  - platform: adc
+    pin: GPIO35
+    name: "Luminosity"
+    update_interval: 30s
+    unit_of_measurement: lx
+    attenuation: 12db
+    filters:
+      - lambda: |- 
+          return (x / 10000.0) * 2000000.0;

@@ -1,4 +1,5 @@
 #pragma once
+#ifndef USE_ESPHOME
 
 #include "ImprovWiFiLibrary.h"
 #include <WiFi.h>
@@ -102,3 +103,4 @@ struct WiFiController
     return false;
   }
 };
+#endif

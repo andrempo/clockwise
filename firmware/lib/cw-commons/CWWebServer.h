@@ -1,4 +1,5 @@
 #pragma once
+#ifndef USE_ESPHOME
 
 #include <WiFi.h>
 #include <CWPreferences.h>
@@ -183,3 +184,4 @@ struct ClockwiseWebServer
   }
   
 };
+#endif

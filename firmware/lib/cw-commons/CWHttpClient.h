@@ -1,4 +1,5 @@
 #pragma once
+#ifndef USE_ESPHOME
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -68,3 +69,4 @@ struct ClockwiseHttpClient
     }
   }
 };
+#endif

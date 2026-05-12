@@ -1,4 +1,5 @@
 #pragma once
+#ifndef USE_ESPHOME
 
 #include <Arduino.h>
 
@@ -270,3 +271,5 @@ const char SETTINGS_PAGE[] PROGMEM = R""""(
 </body>
 </html>
 )"""";
+
+#endif
