@@ -5,17 +5,10 @@ esphome:
     lib_ldf_mode: deep+
     build_flags: -DUSE_ESPHOME
     lib_deps:
-      - Network
-      - fastled/FastLED@^3.10.3
-      - Wire
-      - SPI
       - adafruit/Adafruit GFX Library
-      - adafruit/Adafruit BusIO
       - cw-gfx-engine=symlink:///home/andre/git/clockwise/firmware/lib/cw-gfx-engine
       - cw-commons=symlink:///home/andre/git/clockwise/firmware/lib/cw-commons
       - cw-pacman=symlink:///home/andre/git/clockwise/firmware/clockfaces/cw-cf-0x05
-i2c:
-spi:
 
 external_components:
   - source: components
@@ -107,12 +100,6 @@ display:
       } else {
         id(clockwise_1)->draw();
       }
-
-font:
- - file: gfonts://VT323
-   id: roboto10
-   size: 10
-
 
 sensor:
   - platform: adc
