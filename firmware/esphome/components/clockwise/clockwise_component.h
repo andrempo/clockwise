@@ -53,6 +53,11 @@ class ClockwiseComponent : public Component {
   void set_time(esphome::time::RealTimeClock* rtc_) { _rtc = rtc_; }
   ClockfaceManager& get_manager() { return _manager; }
 
+  // Entity-facing wrappers — delegate to ClockfaceManager
+  void set_active_face(int index) { _manager.setActive(index); }
+  void set_rotation(bool enabled) { _manager.setRotation(enabled); }
+  void set_rotation_interval(unsigned long ms) { _manager.setIntervalMs(ms); }
+
 };
 
 }  // namespace clockwise_component
