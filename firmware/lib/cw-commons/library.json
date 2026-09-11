@@ -4,9 +4,11 @@
     "description": "Clockwise Commons",
     "frameworks": [
         "arduino",
-        "espidf"
+        "espidf",
+        "native"
     ],
     "platforms": [
-        "espressif32"
+        "espressif32",
+        "native"
     ]
 }
