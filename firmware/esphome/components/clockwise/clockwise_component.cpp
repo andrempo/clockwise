@@ -43,9 +43,10 @@ void ClockwiseComponent::draw() {
 
 void ClockwiseComponent::tryFlip() {
 #ifdef USE_ESP32
-  if (shouldFlip()) {
-    if (auto* hub = static_cast<esphome::hub75::HUB75Display*>(_matrixDisplay)) hub->flip_buffer();
-  }
+  // Always flip when double buffering is enabled — selective gating caused
+  // freeze for non-House faces (back buffer never became visible).
+  // Per-face needsDoubleBuffer remains for future lazy allocation, not flip gating.
+  if (auto* hub = static_cast<esphome::hub75::HUB75Display*>(_matrixDisplay)) hub->flip_buffer();
 #endif
 }
 
