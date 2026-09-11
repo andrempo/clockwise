@@ -47,10 +47,16 @@ def _discover_cpp_files(source_path):
     if not os.path.isdir(source_path):
         return cpp_files
     for root, dirs, files in os.walk(source_path):
+        # Exclude tooling and VCS dirs from traversal and from results
+        dirs[:] = [d for d in dirs if d not in ('tools', '.git', '.claude', '.superpowers', 'docs', '.pio', 'build', '.esphome')]
+        if '/tools/' in root or root.endswith('/tools'):
+            continue
         dirs.sort()
         for f in sorted(files):
             if f.endswith('.cpp'):
                 rel_path = os.path.relpath(os.path.join(root, f), source_path)
+                if rel_path.startswith('tools/') or '/tools/' in rel_path:
+                    continue
                 cpp_files.append(rel_path)
     cpp_files.sort()
     return cpp_files

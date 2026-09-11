@@ -1,5 +1,5 @@
 // Auto-generated wrapper for clockface "Pacman"
-// Source: /home/andre/git/temp/cw-cf-0x05
+// Source: /home/andre/git/cw-cf-0x05
 #include "IClockface.h"
 #include "CWDateTime.h"
 #include "clockface_manager.h"
@@ -23,14 +23,13 @@
 // Unique namespace prevents linker collision on class Clockface
 // when multiple wrappers are compiled in the same project.
 namespace Pacman_detail {
-#include "/home/andre/git/temp/cw-cf-0x05/Clockface.cpp"
-#include "/home/andre/git/temp/cw-cf-0x05/clockface_ai.cpp"
-#include "/home/andre/git/temp/cw-cf-0x05/clockface_map.cpp"
-#include "/home/andre/git/temp/cw-cf-0x05/clockface_pathfinding.cpp"
-#include "/home/andre/git/temp/cw-cf-0x05/entity.cpp"
-#include "/home/andre/git/temp/cw-cf-0x05/ghost.cpp"
-#include "/home/andre/git/temp/cw-cf-0x05/pacman.cpp"
-
+#include "/home/andre/git/cw-cf-0x05/Clockface.cpp"
+#include "/home/andre/git/cw-cf-0x05/clockface_ai.cpp"
+#include "/home/andre/git/cw-cf-0x05/clockface_map.cpp"
+#include "/home/andre/git/cw-cf-0x05/clockface_pathfinding.cpp"
+#include "/home/andre/git/cw-cf-0x05/entity.cpp"
+#include "/home/andre/git/cw-cf-0x05/ghost.cpp"
+#include "/home/andre/git/cw-cf-0x05/pacman.cpp"
 }  // namespace Pacman_detail
 
 class Face_Pacman : public IClockface {
@@ -40,6 +39,7 @@ public:
     Face_Pacman(Adafruit_GFX* gfx) : _impl(gfx) {}
     void setup(CWDateTime* dt) override { _impl.setup(dt); }
     void update() override { _impl.update(); }
+    bool needsDoubleBuffer() const override { return false; }
 };
 
 // Registration function called by clockface_registry.cpp

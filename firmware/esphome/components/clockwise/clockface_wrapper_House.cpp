@@ -1,5 +1,5 @@
-// Auto-generated wrapper for clockface "Mario"
-// Source: /home/andre/git/cw-cf-0x01
+// Auto-generated wrapper for clockface "House"
+// Source: /home/andre/git/cw-cf-house
 #include "IClockface.h"
 #include "CWDateTime.h"
 #include "clockface_manager.h"
@@ -22,24 +22,21 @@
 
 // Unique namespace prevents linker collision on class Clockface
 // when multiple wrappers are compiled in the same project.
-namespace Mario_detail {
-#include "/home/andre/git/cw-cf-0x01/Clockface.cpp"
-#include "/home/andre/git/cw-cf-0x01/gfx/block.cpp"
-#include "/home/andre/git/cw-cf-0x01/gfx/cloud.cpp"
-#include "/home/andre/git/cw-cf-0x01/gfx/mario.cpp"
-}  // namespace Mario_detail
+namespace House_detail {
+#include "/home/andre/git/cw-cf-house/Clockface.cpp"
+}  // namespace House_detail
 
-class Face_Mario : public IClockface {
-    Mario_detail::Clockface _impl;
+class Face_House : public IClockface {
+    House_detail::Clockface _impl;
 
 public:
-    Face_Mario(Adafruit_GFX* gfx) : _impl(gfx) {}
+    Face_House(Adafruit_GFX* gfx) : _impl(gfx) {}
     void setup(CWDateTime* dt) override { _impl.setup(dt); }
     void update() override { _impl.update(); }
-    bool needsDoubleBuffer() const override { return false; }
+    bool needsDoubleBuffer() const override { return true; }
 };
 
 // Registration function called by clockface_registry.cpp
-void registerFace_Mario(ClockfaceManager& mgr, Adafruit_GFX* gfx) {
-    mgr.registerFace(new Face_Mario(gfx), "Mario");
+void registerFace_House(ClockfaceManager& mgr, Adafruit_GFX* gfx) {
+    mgr.registerFace(new Face_House(gfx), "House");
 }

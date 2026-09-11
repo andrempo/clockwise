@@ -153,15 +153,15 @@ select:
     name: "Active Clockface"
     id: active_face_select
     options:
-      - "Pacman"
-      - "Mario"
       - "House"
+      - "Mario"
+      - "Pacman"
     set_action:
       then:
         - lambda: |-
-            if (x == "Pacman") id(clockwise_1).set_active_face(0);
+            if (x == "House") id(clockwise_1).set_active_face(0);
             else if (x == "Mario") id(clockwise_1).set_active_face(1);
-            else if (x == "House") id(clockwise_1).set_active_face(2);
+            else if (x == "Pacman") id(clockwise_1).set_active_face(2);
     lambda: |-
       return id(clockwise_1).get_manager().activeName();
 
