@@ -6,6 +6,7 @@
 #include "CWDateTime.h"
 #include "CWDateTimeESPTime.h"
 #include "clockface_manager.h"
+#include "esphome/components/hub75/hub75_component.h"
 #include <Adafruit_GFX.h>
 
 namespace esphome {
@@ -57,6 +58,10 @@ class ClockwiseComponent : public Component {
   void set_active_face(int index) { _manager.setActive(index); }
   void set_rotation(bool enabled) { _manager.setRotation(enabled); }
   void set_rotation_interval(unsigned long ms) { _manager.setIntervalMs(ms); }
+
+ private:
+  bool shouldFlip() const { return _manager.activeNeedsDoubleBuffer(); }
+  void tryFlip();
 
 };
 
