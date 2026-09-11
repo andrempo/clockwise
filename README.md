@@ -87,6 +87,11 @@ Clockwise offers a flexible set of options that you can adjust through its built
 
 ---
 
+### Per-face double buffer (ESPHome)
+`clockfaces[].needs_double_buffer` defaults false. House sets true to avoid tearing from full-screen procedural sky. Global `display.hub75.double_buffer` must stay true (allocates 32KB). `ClockwiseComponent` disables `HUB75Display` auto-flip and calls `flip_buffer()` only when `activeNeedsDoubleBuffer()` true.
+
+---
+
 ## Community & Contributions
 
 - Join the [Clock Club](https://github.com/jnthas/clock-club) to create your own Clockfaces
