@@ -89,16 +89,14 @@ void HUB75Display::update() {
 }
 void HUB75Display::flip_buffer() {
   if (!driver_) return;
-  if (!config_.double_buffer) {
-    ESP_LOGW(TAG, "flip_buffer called but double_buffer disabled");
-    return;
-  }
+  if (!config_.double_buffer) return;
   driver_->flip_buffer();
 }
 void HUB75Display::copy_front_to_back() {
-  if (!driver_) return;
-  if (!config_.double_buffer) return;
-  driver_->copy_front_to_back();
+  // No-op for now: external Hub75Driver not yet patched in this build.
+  // Keeping method to preserve ClockwiseComponent API while avoiding
+  // link error. Full copy will be provided via vendored driver later.
+  (void)driver_;
 }
 
 void HUB75Display::fill(Color color) {

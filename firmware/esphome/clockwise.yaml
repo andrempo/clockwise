@@ -97,7 +97,7 @@ display:
     brightness: 32
     e_pin: GPIO18
     auto_clear_enabled: false
-    double_buffer: true  # required; ClockwiseComponent flips only if active face needsDoubleBuffer (House)
+    double_buffer: false  # single buffer to avoid flicker for incremental faces (Mario/Pacman); House will have some tearing until per-face driver patch is vendored
     update_interval: 32ms
     lambda: |-
       if (id(cw_light_red) > 0.0f || id(cw_light_green) > 0.0f || id(cw_light_blue) > 0.0f) {
