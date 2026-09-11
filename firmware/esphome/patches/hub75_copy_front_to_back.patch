@@ -1,0 +1,99 @@
+# Patch for esphome__esp-hub75@0.3.5 to support copy_front_to_back
+# Applied to: .esphome/.espressif/service_d92d8f1e/esphome__esp-hub75_0.3.5_7068e36d/
+# This enables ClockwiseComponent to sync back buffer for incremental clockfaces (Mario/Pacman)
+# that don't redraw full screen, avoiding flicker when double_buffer:true globally.
+# Run: patch -p1 < firmware/esphome/patches/hub75_copy_front_to_back.patch
+# Or re-apply via: cd firmware/esphome && uv run esphome clean && patch
+
+diff --git a/include/hub75.h b/include/hub75.h
+--- a/include/hub75.h
++++ b/include/hub75.h
+@@ -133,6 +133,7 @@ class Hub75Driver {
+    * Swap happens on next refresh cycle for tear-free animation
+    */
+   void flip_buffer();
++  void copy_front_to_back();
+ 
+ diff --git a/src/core/hub75_driver.cpp b/src/core/hub75_driver.cpp
+--- a/src/core/hub75_driver.cpp
++++ b/src/core/hub75_driver.cpp
+@@ -170,6 +170,12 @@ void Hub75Driver::flip_buffer() {
+   dma_->flip_buffer();
+ }
+ 
++void Hub75Driver::copy_front_to_back() {
++  if (!config_.double_buffer) return;
++  if (!dma_) return;
++  dma_->copy_front_to_back();
++}
++
+ diff --git a/src/platforms/platform_dma.h b/src/platforms/platform_dma.h
+--- a/src/platforms/platform_dma.h
++++ b/src/platforms/platform_dma.h
+@@ -272,6 +272,9 @@ class PlatformDma {
+   virtual void flip_buffer() {
+     // Default: no-op (single buffer mode or not implemented)
+   }
++  virtual void copy_front_to_back() {
++    // Default: no-op
++  }
+ 
+ diff --git a/src/platforms/i2s/i2s_dma.h b/src/platforms/i2s/i2s_dma.h
+--- a/src/platforms/i2s/i2s_dma.h
++++ b/src/platforms/i2s/i2s_dma.h
+@@ -99,6 +99,7 @@ class I2sDma : public PlatformDma {
+    * @brief Swap front and back buffers (double buffer mode only)
+    */
+   void flip_buffer() override;
++  void copy_front_to_back() override;
+ 
+ diff --git a/src/platforms/i2s/i2s_dma.cpp b/src/platforms/i2s/i2s_dma.cpp
+--- a/src/platforms/i2s/i2s_dma.cpp
++++ b/src/platforms/i2s/i2s_dma.cpp
+@@ -1250,0 +1251,6 @@
++void I2sDma::copy_front_to_back() {
++  if (!row_buffers_[1] || !descriptors_[1] || !dma_buffers_[0] || !dma_buffers_[1]) return;
++  size_t total = (size_t)num_rows_ * dma_width_ * bit_depth_ * 2;
++  memcpy(dma_buffers_[active_idx_], dma_buffers_[front_idx_], total);
++}
++
+ diff --git a/src/platforms/gdma/gdma_dma.h b/src/platforms/gdma/gdma_dma.h
+--- a/src/platforms/gdma/gdma_dma.h
++++ b/src/platforms/gdma/gdma_dma.h
+@@ -97,6 +97,7 @@ class GdmaDma : public PlatformDma {
+   void flip_buffer() override;
++  void copy_front_to_back() override;
+ 
+ diff --git a/src/platforms/gdma/gdma_dma.cpp b/src/platforms/gdma/gdma_dma.cpp
+--- a/src/platforms/gdma/gdma_dma.cpp
++++ b/src/platforms/gdma/gdma_dma.cpp
+@@ -818,6 +818,12 @@ void GdmaDma::flip_buffer() {
+   // DMA seamlessly transitions at next frame boundary - no interruption!
+ }
+ 
++void GdmaDma::copy_front_to_back() {
++  if (!row_buffers_[1] || !descriptors_[1] || !dma_buffers_[0] || !dma_buffers_[1]) return;
++  size_t total = (size_t)num_rows_ * dma_width_ * bit_depth_ * 2;
++  memcpy(dma_buffers_[active_idx_], dma_buffers_[front_idx_], total);
++}
++
+ diff --git a/src/platforms/parlio/parlio_dma.h b/src/platforms/parlio/parlio_dma.h
+--- a/src/platforms/parlio/parlio_dma.h
++++ b/src/platforms/parlio/parlio_dma.h
+@@ -55,6 +55,7 @@ class ParlioDma : public PlatformDma {
+   void flip_buffer() override;
++  void copy_front_to_back() override;
+ 
+ diff --git a/src/platforms/parlio/parlio_dma.cpp b/src/platforms/parlio/parlio_dma.cpp
+--- a/src/platforms/parlio/parlio_dma.cpp
++++ b/src/platforms/parlio/parlio_dma.cpp
+@@ -1095,6 +1095,12 @@ void ParlioDma::flip_buffer() {
+   }
+ }
+ 
++void ParlioDma::copy_front_to_back() {
++  if (!row_buffers_[1] || !dma_buffers_[1] || !dma_buffers_[0]) return;
++  if (!is_double_buffered_) return;
++  memcpy(dma_buffers_[active_idx_], dma_buffers_[front_idx_], total_buffer_bytes_);
++}
++
