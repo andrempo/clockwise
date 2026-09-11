@@ -1,6 +1,11 @@
 #include "clockface_manager.h"
+#ifdef ARDUINO
 #include "esphome/core/log.h"
 #include <Arduino.h>
+#else
+#include <cstdint>
+static unsigned long millis() { return 0; }
+#endif
 
 static const char* TAG = "clockwise_manager";
 
@@ -26,6 +31,13 @@ void ClockfaceManager::setIntervalMs(unsigned long ms) {
 const char* ClockfaceManager::activeName() const {
     if (_faces.empty()) return "";
     return _faces[_activeIndex].name;
+}
+
+bool ClockfaceManager::activeNeedsDoubleBuffer() const {
+  if (_faces.empty()) return false;
+  if (_activeIndex < 0 || _activeIndex >= (int)_faces.size()) return false;
+  auto* f = _faces[_activeIndex].face;
+  return f ? f->needsDoubleBuffer() : false;
 }
 
 void ClockfaceManager::init(CWDateTime* dateTime) {

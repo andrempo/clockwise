@@ -20,6 +20,7 @@ public:
     unsigned long intervalMs() const { return _intervalMs; }
     int count() const { return static_cast<int>(_faces.size()); }
     const char* activeName() const;
+    bool activeNeedsDoubleBuffer() const;
 
     void init(CWDateTime* dateTime);
     void update();
