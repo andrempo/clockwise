@@ -25,7 +25,6 @@
 namespace Mario_detail {
 #include "/home/andre/git/cw-cf-0x01/Clockface.cpp"
 #include "/home/andre/git/cw-cf-0x01/gfx/block.cpp"
-#include "/home/andre/git/cw-cf-0x01/gfx/cloud.cpp"
 #include "/home/andre/git/cw-cf-0x01/gfx/mario.cpp"
 }  // namespace Mario_detail
 
