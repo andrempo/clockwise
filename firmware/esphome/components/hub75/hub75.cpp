@@ -95,6 +95,11 @@ void HUB75Display::flip_buffer() {
   }
   driver_->flip_buffer();
 }
+void HUB75Display::copy_front_to_back() {
+  if (!driver_) return;
+  if (!config_.double_buffer) return;
+  driver_->copy_front_to_back();
+}
 
 void HUB75Display::fill(Color color) {
   if (!driver_) [[unlikely]]

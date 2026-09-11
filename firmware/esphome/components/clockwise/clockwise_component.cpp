@@ -37,6 +37,14 @@ void ClockwiseComponent::setup() {
 }
 
 void ClockwiseComponent::draw() {
+#ifdef USE_ESP32
+  // For incremental faces (Mario/Pacman) that don't redraw full screen,
+  // seed back buffer from front before drawing delta to avoid flicker
+  // between stale House and current frame. House does full redraw, so copy is optional.
+  if (!shouldFlip()) {
+    if (auto* hub = static_cast<esphome::hub75::HUB75Display*>(_matrixDisplay)) hub->copy_front_to_back();
+  }
+#endif
   _manager.update();
   tryFlip();
 }

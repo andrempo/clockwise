@@ -37,6 +37,7 @@ class HUB75Display : public display::Display {
   // Brightness control (runtime mutable)
   void set_brightness(uint8_t brightness);
   void flip_buffer();
+  void copy_front_to_back();
   void setAutoFlip(bool v) { auto_flip_ = v; }
   bool getAutoFlip() const { return auto_flip_; }
 
