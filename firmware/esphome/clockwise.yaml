@@ -6,8 +6,8 @@ esphome:
     build_flags: -DUSE_ESPHOME
     lib_deps:
       - adafruit/Adafruit GFX Library
-      - cw-gfx-engine=symlink:///home/andre/git/clockwise/.superpowers/worktrees/multi-clockface/firmware/lib/cw-gfx-engine
-      - cw-commons=symlink:///home/andre/git/clockwise/.superpowers/worktrees/multi-clockface/firmware/lib/cw-commons
+      - cw-gfx-engine=symlink:///home/andre/git/clockwise/firmware/lib/cw-gfx-engine
+      - cw-commons=symlink:///home/andre/git/clockwise/firmware/lib/cw-commons
 
 external_components:
   - source: components
@@ -18,10 +18,15 @@ clockwise:
   matrix_display: matrix_display
   time: sntp_time
   clockfaces:
-    - name: "Pacman"
-      source: "symlink:///home/andre/git/temp/cw-cf-0x05"
+    - name: "House"
+      source: "symlink:///home/andre/git/cw-cf-house"
+      needs_double_buffer: true
     - name: "Mario"
       source: "symlink:///home/andre/git/cw-cf-0x01"
+      # needs_double_buffer: false (default)
+    - name: "Pacman"
+      source: "symlink:///home/andre/git/cw-cf-0x05"
+
 
 esp32:
   board: esp32dev
@@ -92,7 +97,7 @@ display:
     brightness: 32
     e_pin: GPIO18
     auto_clear_enabled: false
-    double_buffer: false
+    double_buffer: true
     update_interval: 32ms
     lambda: |-
       if (id(cw_light_red) > 0.0f || id(cw_light_green) > 0.0f || id(cw_light_blue) > 0.0f) {
@@ -150,11 +155,13 @@ select:
     options:
       - "Pacman"
       - "Mario"
+      - "House"
     set_action:
       then:
         - lambda: |-
             if (x == "Pacman") id(clockwise_1).set_active_face(0);
             else if (x == "Mario") id(clockwise_1).set_active_face(1);
+            else if (x == "House") id(clockwise_1).set_active_face(2);
     lambda: |-
       return id(clockwise_1).get_manager().activeName();
 

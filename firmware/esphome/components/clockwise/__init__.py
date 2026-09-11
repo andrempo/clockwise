@@ -17,10 +17,12 @@ TIME_CONFIG = 'time'
 CONFIG_CLOCKFACES = 'clockfaces'
 CONF_NAME = 'name'
 CONF_SOURCE = 'source'
+CONF_NEEDS_DOUBLE_BUFFER = 'needs_double_buffer'
 
 CLOCKFACE_SCHEMA = cv.Schema({
     cv.Required(CONF_NAME): cv.string,
     cv.Required(CONF_SOURCE): cv.string,
+    cv.Optional(CONF_NEEDS_DOUBLE_BUFFER, default=False): cv.boolean,
 })
 
 CONFIG_SCHEMA = cv.Schema({
@@ -54,7 +56,7 @@ def _discover_cpp_files(source_path):
     return cpp_files
 
 
-def _generate_wrapper(name, source_path):
+def _generate_wrapper(name, source_path, needs_double_buffer=False):
     """Generate a .cpp wrapper that includes all submodule .cpp files in one TU."""
     safe = safe_name(name)
     cpp_files = _discover_cpp_files(source_path)
@@ -104,6 +106,7 @@ public:
     Face_{safe}(Adafruit_GFX* gfx) : _impl(gfx) {{}}
     void setup(CWDateTime* dt) override {{ _impl.setup(dt); }}
     void update() override {{ _impl.update(); }}
+    bool needsDoubleBuffer() const override {{ return {"true" if needs_double_buffer else "false"}; }}
 }};
 
 // Registration function called by clockface_registry.cpp
@@ -175,7 +178,8 @@ async def to_code(config):
             )
 
         # Generate wrapper file
-        wrapper_content = _generate_wrapper(name, source_path)
+        needs_db = cf.get(CONF_NEEDS_DOUBLE_BUFFER, False)
+        wrapper_content = _generate_wrapper(name, source_path, needs_db)
         if wrapper_content is None:
             raise cv.Invalid(
                 f"No .cpp files found in clockface source directory: {source_path} "
