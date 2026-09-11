@@ -6,34 +6,36 @@
 #include "CWDateTime.h"
 #include "CWDateTimeESPTime.h"
 #include "clockface_manager.h"
+#ifdef USE_ESP32
 #include "esphome/components/hub75/hub75_component.h"
+#endif
 #include <Adafruit_GFX.h>
 
 namespace esphome {
 namespace clockwise_component {
 
 class ESPHomeGFXWrapper : public Adafruit_GFX {
-private:
-    esphome::display::Display* display_;
-public:
-    ESPHomeGFXWrapper(esphome::display::Display* display, int16_t w, int16_t h)
-        : Adafruit_GFX(w, h), display_(display) {}
+ private:
+  esphome::display::Display* display_;
+ public:
+  ESPHomeGFXWrapper(esphome::display::Display* display, int16_t w, int16_t h)
+    : Adafruit_GFX(w, h), display_(display) {}
 
-    void drawPixel(int16_t x, int16_t y, uint16_t color) override {
-        // Unpack RGB565 and draw using ESPHome's Display API
-        uint8_t r = (color >> 11) & 0x1F;
-        uint8_t g = (color >> 5) & 0x3F;
-        uint8_t b = color & 0x1F;
+  void drawPixel(int16_t x, int16_t y, uint16_t color) override {
+    // Unpack RGB565 and draw using ESPHome's Display API
+    uint8_t r = (color >> 11) & 0x1F;
+    uint8_t g = (color >> 5) & 0x3F;
+    uint8_t b = color & 0x1F;
 
-        // Scale 5-bit and 6-bit colors to 8-bit
-        r = (r * 255) / 31;
-        g = (g * 255) / 63;
-        b = (b * 255) / 31;
+    // Scale 5-bit and 6-bit colors to 8-bit
+    r = (r * 255) / 31;
+    g = (g * 255) / 63;
+    b = (b * 255) / 31;
 
-        if (display_) {
-            display_->draw_pixel_at(x, y, esphome::Color(r, g, b));
-        }
+    if (display_) {
+      display_->draw_pixel_at(x, y, esphome::Color(r, g, b));
     }
+  }
 };
 
 class ClockwiseComponent : public Component {
@@ -43,6 +45,8 @@ class ClockwiseComponent : public Component {
   ESPHomeGFXWrapper* _gfxWrapper{nullptr};
   esphome::display::Display* _matrixDisplay{nullptr};
   esphome::time::RealTimeClock* _rtc{nullptr};
+  bool shouldFlip() const { return _manager.activeNeedsDoubleBuffer(); }
+  void tryFlip();
 
  public:
   ClockwiseComponent() = default;
@@ -58,11 +62,6 @@ class ClockwiseComponent : public Component {
   void set_active_face(int index) { _manager.setActive(index); }
   void set_rotation(bool enabled) { _manager.setRotation(enabled); }
   void set_rotation_interval(unsigned long ms) { _manager.setIntervalMs(ms); }
-
- private:
-  bool shouldFlip() const { return _manager.activeNeedsDoubleBuffer(); }
-  void tryFlip();
-
 };
 
 }  // namespace clockwise_component
