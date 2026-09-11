@@ -27,7 +27,7 @@ void ClockwiseComponent::setup() {
   // Initialize manager with time reference
   _manager.init(_cwDateTime);
 
-  // Disable auto-flip; we will flip selectively in draw()
+  // Disable HUB75 auto-flip; manual flip in draw() ensures back buffer always becomes visible
 #ifdef USE_ESP32
   if (auto* hub = static_cast<esphome::hub75::HUB75Display*>(_matrixDisplay)) {
     hub->setAutoFlip(false);
