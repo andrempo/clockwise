@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Any
 
 from esphome import automation, pins
@@ -586,10 +587,20 @@ def _build_config_struct(
 
 
 async def to_code(config: ConfigType) -> None:
-    add_idf_component(
-        name="esphome/esp-hub75",
-        ref="0.3.5",
-    )
+    # Prefer vendored patched driver (firmware/lib/esp-hub75) if present,
+    # otherwise fall back to remote 0.3.5. Vendored copy includes
+    # copy_front_to_back() needed for per-face double buffering.
+    local_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../lib/esp-hub75"))
+    if os.path.isdir(local_path) and os.path.isfile(os.path.join(local_path, "idf_component.yml")):
+        add_idf_component(
+            name="esphome/esp-hub75",
+            path=local_path,
+        )
+    else:
+        add_idf_component(
+            name="esphome/esp-hub75",
+            ref="0.3.5",
+        )
 
     # Set compile-time configuration via build flags (so external library sees them)
     if CONF_BIT_DEPTH in config:
