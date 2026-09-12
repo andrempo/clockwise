@@ -152,6 +152,7 @@ select:
   - platform: template
     name: "Active Clockface"
     id: active_face_select
+    update_interval: 1s
     options:
       - "House"
       - "Mario"
@@ -159,11 +160,15 @@ select:
     set_action:
       then:
         - lambda: |-
+            ESP_LOGD("clockwise", "Select set_action x=%s", x.c_str());
             if (x == "House") id(clockwise_1).set_active_face(0);
             else if (x == "Mario") id(clockwise_1).set_active_face(1);
             else if (x == "Pacman") id(clockwise_1).set_active_face(2);
+            ESP_LOGD("clockwise", "Select set_active done active=%s", id(clockwise_1).get_manager().activeName());
     lambda: |-
-      return id(clockwise_1).get_manager().activeName();
+      auto name = id(clockwise_1).get_manager().activeName();
+      ESP_LOGV("clockwise", "Select lambda activeName=%s", name);
+      return std::string(name);
 
 switch:
   - platform: template
