@@ -259,6 +259,10 @@ async def to_code(config):
         if os.path.isdir(gfx_path):
             cg.add_build_flag(f'-I{gfx_path}')
 
+        _compat_path = _component_dir / "arduino_compat"
+        if _compat_path.is_dir():
+            cg.add_build_flag(f'-I{_compat_path}')
+
         var_name = safe_name(name)
         registry_entries.append((name, var_name))
 
