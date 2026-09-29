@@ -199,6 +199,20 @@ async def to_code(config):
     clockface_configs = config.get(CONFIG_CLOCKFACES, [])
     registry_entries = []
 
+    # In-repo shared libs live next to this component (firmware/lib/...).
+    # Registered here from the component location so clockwise.yaml stays
+    # portable (no machine-specific absolute paths in versioned config).
+    _component_dir = Path(__file__).resolve().parent
+    _firmware_lib = _component_dir.parent.parent.parent / "lib"
+    for _lib_name in ("cw-gfx-engine", "cw-commons"):
+        _lib_path = _firmware_lib / _lib_name
+        if _lib_path.is_dir():
+            cg.add_library(_lib_name, None, f"symlink://{_lib_path}")
+
+    # Base directory for relative clockface sources: the yaml's own dir,
+    # so sources stay valid regardless of the invoking CWD.
+    _config_dir = getattr(CORE, "config_dir", None) or os.getcwd()
+
     for cf in clockface_configs:
         name = cf[CONF_NAME]
         source_path = cf[CONF_SOURCE]
@@ -207,8 +221,10 @@ async def to_code(config):
         if source_path.startswith('symlink://'):
             source_path = source_path[len('symlink://'):]
 
-        # Expand ~ and env vars
+        # Expand ~ and env vars; resolve relative paths against the yaml dir
         source_path = os.path.expanduser(os.path.expandvars(source_path))
+        if not os.path.isabs(source_path):
+            source_path = os.path.join(str(_config_dir), source_path)
         source_path = os.path.realpath(source_path)
 
         # Validate source directory exists

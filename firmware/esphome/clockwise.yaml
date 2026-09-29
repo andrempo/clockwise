@@ -6,8 +6,9 @@ esphome:
     build_flags: -DUSE_ESPHOME
     lib_deps:
       - adafruit/Adafruit GFX Library
-      - cw-gfx-engine=symlink:///home/andre/git/clockwise_project/clockwise/firmware/lib/cw-gfx-engine
-      - cw-commons=symlink:///home/andre/git/clockwise_project/clockwise/firmware/lib/cw-commons
+      # NOTE: cw-gfx-engine + cw-commons are auto-registered by the
+      # clockwise component from firmware/lib (see components/clockwise).
+      # Clockface sources below are relative to this yaml's directory.
 
 external_components:
   - source: components
@@ -19,16 +20,16 @@ clockwise:
   time: sntp_time
   clockfaces:
     - name: "House"
-      source: "symlink:///home/andre/git/clockwise_project/cw-cf-house"
+      source: "symlink://../../../cw-cf-house"
       needs_double_buffer: true
     - name: "Matrix"
-      source: "symlink:///home/andre/git/clockwise_project/cw-cf-matrix"
+      source: "symlink://../../../cw-cf-matrix"
       needs_double_buffer: true
     - name: "Mario"
-      source: "symlink:///home/andre/git/clockwise_project/cw-cf-0x01"
+      source: "symlink://../../../cw-cf-0x01"
       # needs_double_buffer: false (default)
     - name: "Pacman"
-      source: "symlink:///home/andre/git/clockwise_project/cw-cf-0x05"
+      source: "symlink://../../../cw-cf-0x05"
 
 
 esp32:
