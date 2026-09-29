@@ -3,8 +3,7 @@
 #include "esphome/core/log.h"
 #include <Arduino.h>
 #else
-#include <cstdint>
-static unsigned long millis() { return 0; }
+#include <Arduino.h>  // arduino_compat shim on esp-idf builds
 #endif
 
 static const char* TAG = "clockwise_manager";
