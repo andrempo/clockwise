@@ -6,8 +6,8 @@ esphome:
     build_flags: -DUSE_ESPHOME
     lib_deps:
       - adafruit/Adafruit GFX Library
-      - cw-gfx-engine=symlink:///home/andre/git/clockwise/firmware/lib/cw-gfx-engine
-      - cw-commons=symlink:///home/andre/git/clockwise/firmware/lib/cw-commons
+      - cw-gfx-engine=symlink:///home/andre/git/clockwise_project/clockwise/firmware/lib/cw-gfx-engine
+      - cw-commons=symlink:///home/andre/git/clockwise_project/clockwise/firmware/lib/cw-commons
 
 external_components:
   - source: components
@@ -19,13 +19,16 @@ clockwise:
   time: sntp_time
   clockfaces:
     - name: "House"
-      source: "symlink:///home/andre/git/cw-cf-house"
+      source: "symlink:///home/andre/git/clockwise_project/cw-cf-house"
+      needs_double_buffer: true
+    - name: "Matrix"
+      source: "symlink:///home/andre/git/clockwise_project/cw-cf-matrix"
       needs_double_buffer: true
     - name: "Mario"
-      source: "symlink:///home/andre/git/cw-cf-0x01"
+      source: "symlink:///home/andre/git/clockwise_project/cw-cf-0x01"
       # needs_double_buffer: false (default)
     - name: "Pacman"
-      source: "symlink:///home/andre/git/cw-cf-0x05"
+      source: "symlink:///home/andre/git/clockwise_project/cw-cf-0x05"
 
 
 esp32:
@@ -155,6 +158,7 @@ select:
     update_interval: 1s
     options:
       - "House"
+      - "Matrix"
       - "Mario"
       - "Pacman"
     set_action:
@@ -162,8 +166,9 @@ select:
         - lambda: |-
             ESP_LOGD("clockwise", "Select set_action x=%s", x.c_str());
             if (x == "House") id(clockwise_1).set_active_face(0);
-            else if (x == "Mario") id(clockwise_1).set_active_face(1);
-            else if (x == "Pacman") id(clockwise_1).set_active_face(2);
+            else if (x == "Matrix") id(clockwise_1).set_active_face(1);
+            else if (x == "Mario") id(clockwise_1).set_active_face(2);
+            else if (x == "Pacman") id(clockwise_1).set_active_face(3);
             ESP_LOGD("clockwise", "Select set_active done active=%s", id(clockwise_1).get_manager().activeName());
     lambda: |-
       auto name = id(clockwise_1).get_manager().activeName();

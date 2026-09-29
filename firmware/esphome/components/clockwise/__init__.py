@@ -1,14 +1,50 @@
 import os
 import re
+from pathlib import Path
 
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import display
 from esphome.components import time
 from esphome.const import CONF_ID
+from esphome.core import CORE
+from esphome.helpers import write_file_if_changed
 
 clockwise_component_ns = cg.esphome_ns.namespace('clockwise_component')
 ClockwiseComponent = clockwise_component_ns.class_('ClockwiseComponent', cg.Component)
+
+# Pending files to be (re)written to build tree after copy_src_tree.
+# copy_src_tree() walks <build>/src/esphome and deletes any file not in
+# component.resources. Our wrappers/registry are generated, not static
+# resources, so the first write in to_code() would be deleted by the later
+# copy_src_tree() call in writer.write_cpp(). We work around this by
+# monkey-patching copy_src_tree to re-write our files afterwards, so they
+# live in the same folder as the rest of ESPHome's generated code
+# (<build>/src/esphome/components/clockwise/ == alongside main.cpp/esphome.h)
+# without needing to stage them in the source component dir.
+_pending_build_files: dict[Path, str] = {}
+
+
+def _ensure_writer_patched():
+    try:
+        import esphome.writer as writer
+    except ImportError:
+        return
+    if getattr(writer.copy_src_tree, "_clockwise_patched", False):
+        return
+    orig = writer.copy_src_tree
+
+    def patched_copy_src_tree():
+        # Run original (copies static resources + may delete our earlier writes)
+        result = orig()
+        # Re-create our generated files in the build tree
+        for p, content in _pending_build_files.items():
+            p.parent.mkdir(parents=True, exist_ok=True)
+            write_file_if_changed(p, content)
+        return result
+
+    patched_copy_src_tree._clockwise_patched = True  # type: ignore[attr-defined]
+    writer.copy_src_tree = patched_copy_src_tree  # type: ignore[assignment]
 
 MATRIX_DISPLAY_CONFIG = 'matrix_display'
 TIME_CONFIG = 'time'
@@ -161,7 +197,6 @@ async def to_code(config):
 
     # Process clockfaces
     clockface_configs = config.get(CONFIG_CLOCKFACES, [])
-    component_dir = os.path.dirname(os.path.realpath(__file__))
     registry_entries = []
 
     for cf in clockface_configs:
@@ -193,10 +228,15 @@ async def to_code(config):
             )
 
         wrapper_filename = f"clockface_wrapper_{safe_name(name)}.cpp"
-        wrapper_path = os.path.join(component_dir, wrapper_filename)
-
-        with open(wrapper_path, 'w') as f:
-            f.write(wrapper_content)
+        # Write directly to ESPHome build tree (same folder as main.cpp / esphome.h)
+        # CORE.relative_src_path("esphome/components/clockwise/...") == <build>/src/esphome/components/clockwise/...
+        wrapper_path: Path = CORE.relative_src_path(
+            "esphome", "components", "clockwise", wrapper_filename
+        )
+        wrapper_path.parent.mkdir(parents=True, exist_ok=True)
+        write_file_if_changed(wrapper_path, wrapper_content)
+        _pending_build_files[wrapper_path] = wrapper_content
+        _ensure_writer_patched()
 
         # Check for gfx/ subdirectory and add its include path
         gfx_path = os.path.join(source_path, 'gfx')
@@ -206,18 +246,24 @@ async def to_code(config):
         var_name = safe_name(name)
         registry_entries.append((name, var_name))
 
-    # Generate registry header (declaration only)
+    # Generate registry header (declaration only) - to build tree
     registry_content = _generate_registry_header(registry_entries, [])
-    registry_path = os.path.join(component_dir, 'clockface_registry.h')
-
-    with open(registry_path, 'w') as f:
-        f.write(registry_content)
+    registry_path: Path = CORE.relative_src_path(
+        "esphome", "components", "clockwise", "clockface_registry.h"
+    )
+    registry_path.parent.mkdir(parents=True, exist_ok=True)
+    write_file_if_changed(registry_path, registry_content)
+    _pending_build_files[registry_path] = registry_content
+    _ensure_writer_patched()
 
     # Generate registry implementation (.cpp) that calls per-wrapper registration fns
     registry_impl = _generate_registry_source(registry_entries)
-    registry_impl_path = os.path.join(component_dir, 'clockface_registry.cpp')
-
-    with open(registry_impl_path, 'w') as f:
-        f.write(registry_impl)
+    registry_impl_path: Path = CORE.relative_src_path(
+        "esphome", "components", "clockwise", "clockface_registry.cpp"
+    )
+    registry_impl_path.parent.mkdir(parents=True, exist_ok=True)
+    write_file_if_changed(registry_impl_path, registry_impl)
+    _pending_build_files[registry_impl_path] = registry_impl
+    _ensure_writer_patched()
 
     await cg.register_component(var, config)
