@@ -3,7 +3,12 @@
 #include "esphome/core/log.h"
 #include <Arduino.h>
 #else
+#ifdef ESP_PLATFORM
 #include <Arduino.h>  // arduino_compat shim on esp-idf builds
+#else
+#include <cstdint>
+static unsigned long millis() { return 0; }  // host/native stub (pre-IDF behavior)
+#endif
 #endif
 
 static const char* TAG = "clockwise_manager";
