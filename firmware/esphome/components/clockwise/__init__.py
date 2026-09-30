@@ -209,6 +209,14 @@ async def to_code(config):
         if _lib_path.is_dir():
             cg.add_library(_lib_name, None, f"symlink://{_lib_path}")
 
+    # Vendored Adafruit GFX core (gfx/): the registry GFX lib is Arduino-only
+    # (depends on BusIO, excluded under esp-idf with lib_compat_mode=strict),
+    # so the core class is vendored here and registered the same way as the
+    # cw libs above. Only the core is vendored; SPITFT/GrayOLED are unused.
+    _gfx_path = _component_dir / "gfx"
+    if _gfx_path.is_dir():
+        cg.add_library("cw-gfx-vendored", None, f"symlink://{_gfx_path}")
+
     # Base directory for relative clockface sources: the yaml's own dir,
     # so sources stay valid regardless of the invoking CWD.
     _config_dir = getattr(CORE, "config_dir", None) or os.getcwd()
@@ -262,6 +270,11 @@ async def to_code(config):
         _compat_path = _component_dir / "arduino_compat"
         if _compat_path.is_dir():
             cg.add_build_flag(f'-I{_compat_path}')
+            # Define ARDUINO from the first TU line so shared headers (e.g.
+            # CWDateTime.h) take their Arduino branches no matter the include
+            # order. ESPHome core keys off USE_ARDUINO (unset on esp-idf), so
+            # this does not affect ESPHome itself.
+            cg.add_build_flag('-DARDUINO=100')
 
         var_name = safe_name(name)
         registry_entries.append((name, var_name))

@@ -1,0 +1,12 @@
+{
+  "name": "cw-gfx-vendored",
+  "version": "1.12.6",
+  "description": "Vendored Adafruit GFX core (graphics primitives only, no SPITFT/GrayOLED, no BusIO) for ESP-IDF builds",
+  "frameworks": [
+    "arduino",
+    "espidf"
+  ],
+  "platforms": [
+    "espressif32"
+  ]
+}

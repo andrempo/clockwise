@@ -4,11 +4,11 @@ esphome:
   platformio_options:
     lib_ldf_mode: deep+
     build_flags: -DUSE_ESPHOME
-    lib_deps:
-      - adafruit/Adafruit GFX Library
-      # NOTE: cw-gfx-engine + cw-commons are auto-registered by the
-      # clockwise component from firmware/lib (see components/clockwise).
-      # Clockface sources below are relative to this yaml's directory.
+    # NOTE: cw-gfx-engine + cw-commons are auto-registered by the
+    # clockwise component from firmware/lib, and the Adafruit GFX core from
+    # components/clockwise/gfx/ (registry GFX lib is Arduino-only and is
+    # excluded under esp-idf with lib_compat_mode=strict).
+    # Clockface sources below are relative to this yaml's directory.
 
 external_components:
   - source: components
