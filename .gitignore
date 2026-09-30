@@ -16,3 +16,4 @@ firmware/uv.lock
 # Superpower agent working files – local only
 .superpowers/
 docs/superpowers/
+.platformio/

@@ -1,0 +1,7 @@
+/build/
+/obj/
+*.o
+*.a
+sim_test_renderer
+sim_test_text
+sim
